@@ -1,34 +1,40 @@
-import mysql.connector
-from dotenv import load_dotenv
-import os
 
-# Load environment variables from .env file
-load_dotenv()
+CREATE DATABASE IF NOT EXISTS alx_book_store;
+USE alx_book_store;
 
-try:
-    # Connect to MySQL Server
-    connection = mysql.connector.connect(
-        host =os.getenv('DB_HOST'),
-        user = os.getenv('DB_USER'),
-        password = os.getenv('DB_PASSWORD'),
-        # database="alx_book_store"
-    )
-    if connection.is_connected():
-        cursor = connection.cursor()
-        cursor.execute("CREATE DATABASE IF NOT EXISTS alx_book_store")
-        print("Database 'alx_book_store' created successfully!")
-        # cursor.execute("SELECT * FROM Books")
+CREATE TABLE Authors (
+    author_id INT PRIMARY KEY,
+    author_name VARCHAR(215),
+);
 
-        # books = cursor.fetchall()
+CREATE TABLE Books (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(130),
+    author_id INT,
+    price DOUBLE,
+    publication_date DATE,
+    FOREIGN KEY (author_id) REFERENCES Authors(author_id)
+);
 
-        # for i in books:
-        #     print (i)
-    
-except mysql.connector.Error as e:
-    print(f"Error while connecting to MySQL: {e}")
+CREATE TABLE Customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(215),
+    email VARCHAR(215),
+    address TEXT,
+);
 
-finally:
-    if 'cursor' in locals():
-        cursor.close()
-    if 'connection' in locals() and connection.is_connected():
-        connection.close()
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+);
+
+CREATE TABLE Order_Details (
+    orderdetailid INT PRIMARY KEY,
+    order_id INT,
+    book_id INT,
+    quantity DOUBLE,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
+);
